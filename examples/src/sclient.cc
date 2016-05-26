@@ -1,8 +1,5 @@
-#include <iostream>
-#include <libiqxmlrpc/libiqxmlrpc.h>
-#include <libiqxmlrpc/https_client.h>
-
 #include "helper.hpp"
+#include <libiqxmlrpc/https_client.h>
 
 int main()
 {

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <libiqxmlrpc/libiqxmlrpc.h>
+#include <libiqxmlrpc/ssl_lib.h>
 #include <openssl/ssl.h>
 
 #include <boost/program_options.hpp>

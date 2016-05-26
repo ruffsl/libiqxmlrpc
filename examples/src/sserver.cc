@@ -1,8 +1,6 @@
-#include <iostream>
-#include <libiqxmlrpc/libiqxmlrpc.h>
+#include "helper.hpp"
 #include <libiqxmlrpc/https_server.h>
 
-#include "helper.hpp"
 
 // Simple method that just returns back first input parameter
 class Echo: public iqxmlrpc::Method {
