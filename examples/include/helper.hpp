@@ -1,5 +1,6 @@
 #include <iostream>
 #include <libiqxmlrpc/libiqxmlrpc.h>
+#include <openssl/ssl.h>
 
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
@@ -39,4 +40,23 @@ private:
   }
 
   mutable std::string finger_;
+};
+
+class CAVerifier {
+public:
+  CAVerifier(std::string CAfile, std::string CApath)
+  {
+      CAfile_ = CAfile;
+      CApath_ =CApath;
+  }
+  SSL_CTX* prepare(SSL_CTX* ctx)
+  {
+    printf("CAfile: [%s]\n", CAfile_.c_str());
+    printf("CApath: [%s]\n", CApath_.c_str());
+    SSL_CTX_load_verify_locations(ctx, CAfile_.c_str(), CApath_.c_str());
+    return ctx;
+  }
+
+  mutable std::string CAfile_;
+  mutable std::string CApath_;
 };

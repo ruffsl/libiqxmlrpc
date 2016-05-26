@@ -7,13 +7,13 @@
 int main()
 {
   using namespace iqxmlrpc;
+  iqnet::ssl::ctx = iqnet::ssl::Ctx::client_server("../keys/good/client/client.cert", "../keys/good/client/client.pem");
 
-  iqnet::ssl::ctx = iqnet::ssl::Ctx::client_server( "../keys/client.crt", "../keys/client.pem" );
-
-  boost::optional<FingerprintVerifier> server_verifier;
-  const std::string server_fingerprint_ = "FF:61:1B:09:6F:C3:CA:0A:58:DA:5E:1A:F6:AC:C0:F6:80:C4:C2:ED:0D:65:02:A9:86:4B:62:F1:E8:2A:09:69";
-  server_verifier = FingerprintVerifier(server_fingerprint_);
-  iqnet::ssl::ctx->verify_server(&server_verifier.get());
+  std::string ca_file;
+  std::string ca_path = "../keys/good/public";
+  CAVerifier prepare_verifier(ca_file, ca_path);
+  SSL* ssl_context = SSL_new(prepare_verifier.prepare(iqnet::ssl::ctx->context()));
+  iqnet::ssl::ctx->prepare_verify(ssl_context, true);
 
   Client<Https_client_connection> client(iqnet::Inet_addr(3344));
 
