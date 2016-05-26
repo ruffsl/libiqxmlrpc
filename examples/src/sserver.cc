@@ -11,7 +11,7 @@ public:
       retval = 0;
     else
       retval = params[0];
-    std::cout << retval["var1"].get_int() << std::endl;
+    std::cout << retval["var1"].get_string() << std::endl;
   }
 };
 

@@ -18,11 +18,11 @@ int main()
 
   Param_list pl;
   pl.push_back(Struct());
-  pl[0].insert("var1", 1);
-  pl[0].insert("var2", "value");
+  pl[0].insert("var1", "💻 The Answer to the Ultimate Question of Life, The Universe, and Everything?");
+  pl[0].insert("var2", "42 📡");
 
   Response r = client.execute("echo", pl);
 
-  assert(r.value()["var1"].get_int() == 1);
-  std::cout << "OK" << std::endl;
+  assert(r.value()["var2"].get_string() == "42 📡");
+  std::cout << r.value()["var2"].get_string() << std::endl;
 }
