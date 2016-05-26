@@ -18,12 +18,13 @@ public:
 int main()
 {
   int port = 3344;
+  std::string cert_path = "../keys/good/server/server.cert";
+  std::string key_path = "../keys/good/server/server.pem";
+  std::string ca_file;
+  std::string ca_path = "../keys/good/public";
+  iqnet::ssl::ctx = iqnet::ssl::Ctx::server_only(cert_path, key_path);
 
-  iqnet::ssl::ctx = iqnet::ssl::Ctx::server_only("../keys/good/server/server.cert", "../keys/good/server/server.pem" );
-
-  const std::string CAfile;
-  const std::string CApath = "../keys/good/public";
-  CAVerifier prepare_verifier(CAfile, CApath);
+  CAVerifier prepare_verifier(ca_file, ca_path);
   SSL* ssl_context = SSL_new(prepare_verifier.prepare(iqnet::ssl::ctx->context()));
   iqnet::ssl::ctx->prepare_verify(ssl_context, true);
 

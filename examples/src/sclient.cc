@@ -4,10 +4,12 @@
 int main()
 {
   using namespace iqxmlrpc;
-  iqnet::ssl::ctx = iqnet::ssl::Ctx::client_server("../keys/good/client/client.cert", "../keys/good/client/client.pem");
-
+  std::string cert_path = "../keys/good/client/client.cert";
+  std::string key_path = "../keys/good/client/client.pem";
   std::string ca_file;
   std::string ca_path = "../keys/good/public";
+  iqnet::ssl::ctx = iqnet::ssl::Ctx::client_server(cert_path, key_path);
+
   CAVerifier prepare_verifier(ca_file, ca_path);
   SSL* ssl_context = SSL_new(prepare_verifier.prepare(iqnet::ssl::ctx->context()));
   iqnet::ssl::ctx->prepare_verify(ssl_context, true);
