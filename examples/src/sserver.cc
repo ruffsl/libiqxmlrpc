@@ -18,11 +18,16 @@ public:
 int main()
 {
   int port = 3344;
-  std::string cert_path = "../keys/good/server/server.cert";
-  std::string key_path = "../keys/good/server/server.pem";
+  std::string server_cert_file = "../keys/good/server/server.cert";
+  std::string server_key_file = "../keys/good/server/server.pem";
+  std::string client_cert_file = "../keys/good/client/client.cert";
   std::string ca_file;
   std::string ca_path = "../keys/good/public";
-  iqnet::ssl::ctx = iqnet::ssl::Ctx::server_only(cert_path, key_path);
+  iqnet::ssl::ctx = iqnet::ssl::Ctx::server_only(server_cert_file, server_key_file);
+
+  boost::optional<FingerprintVerifier> client_verifier;
+  client_verifier = FingerprintVerifier(client_cert_file);
+  iqnet::ssl::ctx->verify_client(true, &client_verifier.get());
 
   CAVerifier prepare_verifier(ca_file, ca_path);
   SSL* ssl_context = SSL_new(prepare_verifier.prepare(iqnet::ssl::ctx->context()));

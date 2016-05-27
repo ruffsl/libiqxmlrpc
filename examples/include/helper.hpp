@@ -8,8 +8,7 @@
 #include <boost/format.hpp>
 
 std::string
-my_cert_finger_sha256(X509_STORE_CTX* ctx) {
-  X509* x = X509_STORE_CTX_get_current_cert(ctx);
+my_cert_finger_sha256(X509* x) {
   const EVP_MD* digest = EVP_get_digestbyname("sha256");
   unsigned int n = 0;
   unsigned char md[EVP_MAX_MD_SIZE];
@@ -25,21 +24,25 @@ my_cert_finger_sha256(X509_STORE_CTX* ctx) {
 
 class FingerprintVerifier: public iqnet::ssl::ConnectionVerifier {
 public:
-  FingerprintVerifier(const std::string& finger):
-    finger_(finger)
+  FingerprintVerifier(const std::string& cert_file)
   {
-    boost::erase_all(finger_, ":");
-    boost::to_lower(finger_);
+    cert_file_ = cert_file;
+    FILE* f = std::fopen(cert_file_.c_str(), "r");
+    X509* x = PEM_read_X509(f, NULL, NULL, NULL);
+    finger_ = my_cert_finger_sha256(x);
   }
 
 private:
   int do_verify(bool, X509_STORE_CTX* ctx) const
   {
+    X509* x = X509_STORE_CTX_get_current_cert(ctx);
+    std::string finger = my_cert_finger_sha256(x);
     printf("recorded finger: [%s]\n", finger_.c_str());
-    printf("observed finger: [%s]\n", my_cert_finger_sha256(ctx).c_str());
-    return finger_ == my_cert_finger_sha256(ctx);
+    printf("observed finger: [%s]\n", finger.c_str());
+    return finger_ == my_cert_finger_sha256(x);
   }
 
+  mutable std::string cert_file_;
   mutable std::string finger_;
 };
 

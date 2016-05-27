@@ -4,11 +4,16 @@
 int main()
 {
   using namespace iqxmlrpc;
-  std::string cert_path = "../keys/good/client/client.cert";
-  std::string key_path = "../keys/good/client/client.pem";
+  std::string client_cert_file = "../keys/good/client/client.cert";
+  std::string client_key_file = "../keys/good/client/client.pem";
+  std::string server_cert_file = "../keys/good/server/server.cert";
   std::string ca_file;
   std::string ca_path = "../keys/good/public";
-  iqnet::ssl::ctx = iqnet::ssl::Ctx::client_server(cert_path, key_path);
+  iqnet::ssl::ctx = iqnet::ssl::Ctx::client_server(client_cert_file, client_key_file);
+
+  boost::optional<FingerprintVerifier> server_verifier;
+  server_verifier = FingerprintVerifier(server_cert_file);
+  iqnet::ssl::ctx->verify_server(&server_verifier.get());
 
   CAVerifier prepare_verifier(ca_file, ca_path);
   SSL* ssl_context = SSL_new(prepare_verifier.prepare(iqnet::ssl::ctx->context()));
