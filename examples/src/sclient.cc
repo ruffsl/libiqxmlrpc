@@ -1,8 +1,30 @@
 #include "helper.hpp"
 #include <libiqxmlrpc/https_client.h>
 
-int main()
+int main(int argc, const char* argv[])
 {
+  int mode;
+  bool finger = false;
+  bool caverify = false;
+  if ( argc > 1 ) {
+      mode = std::atoi( argv[1] );
+  }
+
+  switch (mode) {
+  case FINGER:
+      finger = true;
+      break;
+  case CAVERIFY:
+      caverify = true;
+      break;
+  case FINGER_CAVERIFY:
+      finger = true;
+      caverify = true;
+      break;
+  default:
+      break;
+  }
+
   using namespace iqxmlrpc;
   std::string client_cert_file = "../keys/good/client/client.cert";
   std::string client_key_file = "../keys/good/client/client.pem";
@@ -13,11 +35,13 @@ int main()
 
   boost::optional<FingerprintVerifier> server_verifier;
   server_verifier = FingerprintVerifier(server_cert_file);
-  iqnet::ssl::ctx->verify_server(&server_verifier.get());
+  if(finger)
+      iqnet::ssl::ctx->verify_server(&server_verifier.get());
 
   CAVerifier prepare_verifier(ca_file, ca_path);
   SSL* ssl_context = SSL_new(prepare_verifier.prepare(iqnet::ssl::ctx->context()));
-  iqnet::ssl::ctx->prepare_verify(ssl_context, true);
+  if(caverify)
+      iqnet::ssl::ctx->prepare_verify(ssl_context, true);
 
   Client<Https_client_connection> client(iqnet::Inet_addr(3344));
 

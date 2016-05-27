@@ -1,7 +1,6 @@
 #include "helper.hpp"
 #include <libiqxmlrpc/https_server.h>
 
-
 // Simple method that just returns back first input parameter
 class Echo: public iqxmlrpc::Method {
 public:
@@ -15,8 +14,30 @@ public:
   }
 };
 
-int main()
+int main(int argc, const char* argv[])
 {
+  int mode;
+  bool finger = false;
+  bool caverify = false;
+  if ( argc > 1 ) {
+      mode = std::atoi( argv[1] );
+  }
+
+  switch (mode) {
+  case FINGER:
+      finger = true;
+      break;
+  case CAVERIFY:
+      caverify = true;
+      break;
+  case FINGER_CAVERIFY:
+      finger = true;
+      caverify = true;
+      break;
+  default:
+      break;
+  }
+
   int port = 3344;
   std::string server_cert_file = "../keys/good/server/server.cert";
   std::string server_key_file = "../keys/good/server/server.pem";
@@ -27,11 +48,13 @@ int main()
 
   boost::optional<FingerprintVerifier> client_verifier;
   client_verifier = FingerprintVerifier(client_cert_file);
-  iqnet::ssl::ctx->verify_client(true, &client_verifier.get());
+  if(finger)
+      iqnet::ssl::ctx->verify_client(true, &client_verifier.get());
 
   CAVerifier prepare_verifier(ca_file, ca_path);
   SSL* ssl_context = SSL_new(prepare_verifier.prepare(iqnet::ssl::ctx->context()));
-  iqnet::ssl::ctx->prepare_verify(ssl_context, true);
+  if(caverify)
+      iqnet::ssl::ctx->prepare_verify(ssl_context, true);
 
   iqxmlrpc::Serial_executor_factory ef;
   iqxmlrpc::Https_server server(port, &ef);

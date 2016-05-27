@@ -7,6 +7,11 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 
+enum MODE {NOAUTH = 0,
+           FINGER,
+           CAVERIFY,
+           FINGER_CAVERIFY};
+
 std::string
 my_cert_finger_sha256(X509* x) {
   const EVP_MD* digest = EVP_get_digestbyname("sha256");
